@@ -55,7 +55,10 @@
 ## 🚀 使用方法
 
 ### 在线使用
-直接用浏览器打开 `index.html` 文件即可使用。
+
+**🌐 在线演示地址：[https://laiwanzhou01.github.io/life-predictor/](https://laiwanzhou01.github.io/life-predictor/)**
+
+无需安装，直接访问即可使用！
 
 ### 本地部署
 1. 克隆或下载本项目
@@ -63,8 +66,8 @@
 3. 无需安装任何依赖，纯前端实现
 
 ### 网站部署
-可以部署到任何静态网站托管服务：
-- GitHub Pages
+本项目已部署到 GitHub Pages，可以参考以下平台进行部署：
+- ✅ GitHub Pages（当前使用）
 - Netlify
 - Vercel
 - Cloudflare Pages
