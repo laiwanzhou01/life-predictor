@@ -358,6 +358,203 @@ header h1 {
     margin-bottom: 10px;
 }
 
+/* 寿命对比图表 */
+.lifespan-chart {
+    margin-top: 30px;
+    padding: 20px;
+    background: var(--bg-color);
+    border-radius: 12px;
+}
+
+.lifespan-chart h3 {
+    font-size: 1.3rem;
+    margin-bottom: 20px;
+    color: var(--text-primary);
+}
+
+.chart-container {
+    margin-top: 20px;
+}
+
+.chart-item {
+    margin-bottom: 20px;
+}
+
+.chart-label {
+    font-weight: 600;
+    margin-bottom: 8px;
+    color: var(--text-primary);
+    font-size: 0.95rem;
+}
+
+.chart-bar-wrapper {
+    background: #e2e8f0;
+    border-radius: 8px;
+    height: 40px;
+    position: relative;
+    overflow: hidden;
+}
+
+.chart-bar {
+    height: 100%;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    padding-right: 12px;
+    transition: width 0.6s ease;
+    font-weight: 600;
+    font-size: 0.9rem;
+}
+
+.chart-bar.baseline {
+    background: linear-gradient(90deg, #94a3b8, #64748b);
+    color: white;
+}
+
+.chart-bar.predicted.positive {
+    background: linear-gradient(90deg, #10b981, #059669);
+    color: white;
+}
+
+.chart-bar.predicted.negative {
+    background: linear-gradient(90deg, #f59e0b, #d97706);
+    color: white;
+}
+
+.chart-bar.theoretical {
+    background: linear-gradient(90deg, #8b5cf6, #7c3aed);
+    color: white;
+}
+
+.chart-bar.limit {
+    background: linear-gradient(90deg, #ef4444, #dc2626);
+    color: white;
+}
+
+.chart-value {
+    white-space: nowrap;
+}
+
+/* 类别影响分析 */
+.category-analysis {
+    margin-top: 30px;
+    padding: 20px;
+    background: var(--bg-color);
+    border-radius: 12px;
+}
+
+.category-analysis h3 {
+    font-size: 1.3rem;
+    margin-bottom: 10px;
+    color: var(--text-primary);
+}
+
+.section-desc {
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+    margin-bottom: 20px;
+}
+
+.category-item {
+    background: white;
+    padding: 16px;
+    border-radius: 10px;
+    margin-bottom: 16px;
+    border: 1px solid var(--border-color);
+    transition: box-shadow 0.3s ease;
+}
+
+.category-item:hover {
+    box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+}
+
+.category-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+}
+
+.category-name {
+    font-weight: 600;
+    font-size: 1rem;
+    color: var(--text-primary);
+}
+
+.category-impact {
+    font-weight: 700;
+    font-size: 1.1rem;
+    padding: 4px 12px;
+    border-radius: 6px;
+}
+
+.category-impact.positive {
+    background: #dcfce7;
+    color: #16a34a;
+}
+
+.category-impact.negative {
+    background: #fee2e2;
+    color: #dc2626;
+}
+
+.category-impact.neutral {
+    background: #f1f5f9;
+    color: var(--text-secondary);
+}
+
+.category-bar-wrapper {
+    height: 8px;
+    background: #e2e8f0;
+    border-radius: 4px;
+    overflow: hidden;
+    margin-bottom: 12px;
+}
+
+.category-bar {
+    height: 100%;
+    border-radius: 4px;
+    transition: width 0.5s ease;
+}
+
+.category-bar.positive {
+    background: linear-gradient(90deg, #10b981, #059669);
+}
+
+.category-bar.negative {
+    background: linear-gradient(90deg, #ef4444, #dc2626);
+}
+
+.category-factors {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.factor-tag {
+    display: inline-block;
+    padding: 4px 10px;
+    border-radius: 6px;
+    font-size: 0.85rem;
+    font-weight: 500;
+}
+
+.factor-tag.positive {
+    background: #d1fae5;
+    color: #065f46;
+}
+
+.factor-tag.negative {
+    background: #fee2e2;
+    color: #991b1b;
+}
+
+.factor-tag.neutral {
+    background: #f1f5f9;
+    color: var(--text-secondary);
+}
+
 footer {
     margin-top: 30px;
     text-align: center;

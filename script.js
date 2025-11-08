@@ -41,9 +41,9 @@ function getImpactFactors(formData) {
     
     // 饮食 - 固体
     const meatImpact = {
-        white: { value: -7, label: '白肉摄入' },
-        mixed: { value: 0, label: '混合肉类' },
-        red: { value: 7, label: '红肉摄入' }
+        white: { value: -7, label: '白肉摄入', category: '饮食-固体' },
+        mixed: { value: 0, label: '混合肉类', category: '饮食-固体' },
+        red: { value: 7, label: '红肉摄入', category: '饮食-固体' }
     }[formData.meatType];
     impacts.push(meatImpact);
     
@@ -286,6 +286,78 @@ function getImpactFactors(formData) {
     return impacts;
 }
 
+// 为影响因素添加类别信息
+function categorizeImpacts(impacts) {
+    const categoryMap = {
+        '白肉摄入': '饮食-固体', '混合肉类': '饮食-固体', '红肉摄入': '饮食-固体',
+        '蔬果摄入充足': '饮食-固体', '蔬果摄入中等': '饮食-固体', '蔬果摄入不足': '饮食-固体',
+        '经常吃辣': '饮食-固体', '偶尔吃辣': '饮食-固体', '不吃辣': '饮食-固体',
+        '每日坚果': '饮食-固体', '每周坚果': '饮食-固体', '偶尔坚果': '饮食-固体', '不吃坚果': '饮食-固体',
+        '很少吃加工食品': '饮食-固体', '偶尔吃加工食品': '饮食-固体', '经常吃加工食品': '饮食-固体', '频繁吃加工食品': '饮食-固体',
+        '不嚼槟榔': '饮食-固体', '已戒槟榔': '饮食-固体', '偶尔嚼槟榔': '饮食-固体', '经常嚼槟榔': '饮食-固体',
+        '极低碳水': '饮食-固体', '低碳水': '饮食-固体', '最优碳水': '饮食-固体', '中等碳水': '饮食-固体', '高碳水': '饮食-固体',
+        '植物蛋白为主': '饮食-固体', '混合蛋白': '饮食-固体', '动物蛋白为主': '饮食-固体',
+        
+        '最优咖啡摄入': '饮食-液体', '适量咖啡': '饮食-液体', '少量咖啡': '饮食-液体', '不喝咖啡': '饮食-液体',
+        '充足牛奶': '饮食-液体', '适量牛奶': '饮食-液体', '少量牛奶': '饮食-液体', '不喝牛奶': '饮食-液体',
+        '每日饮茶': '饮食-液体', '经常饮茶': '饮食-液体', '偶尔饮茶': '饮食-液体', '不喝茶': '饮食-液体',
+        '不喝含糖饮料': '饮食-液体', '偶尔含糖饮料': '饮食-液体', '每日含糖饮料': '饮食-液体', '大量含糖饮料': '饮食-液体',
+        '不饮酒': '饮食-液体', '少量饮酒': '饮食-液体', '中等饮酒': '饮食-液体', '大量饮酒': '饮食-液体',
+        
+        '从不吸烟': '气体与光照', '已戒烟': '气体与光照', '轻度吸烟': '气体与光照', '重度吸烟': '气体与光照',
+        '经常晒太阳': '气体与光照', '偶尔晒太阳': '气体与光照', '很少晒太阳': '气体与光照',
+        
+        '二甲双胍-不适用': '药物补充剂', '服用二甲双胍': '药物补充剂', '糖尿病未控制': '药物补充剂',
+        '定期服用维生素': '药物补充剂', '偶尔服用维生素': '药物补充剂', '不服用维生素': '药物补充剂',
+        '定期服用氨糖': '药物补充剂', '偶尔服用氨糖': '药物补充剂', '不服用氨糖': '药物补充剂',
+        '高亚精胺摄入': '药物补充剂', '中等亚精胺摄入': '药物补充剂', '低亚精胺摄入': '药物补充剂', '很少亚精胺': '药物补充剂',
+        
+        '规律挥拍运动': '运动与日常', '偶尔挥拍运动': '运动与日常', '很少挥拍运动': '运动与日常', '不做挥拍运动': '运动与日常',
+        '高强度运动': '运动与日常', '中等强度运动': '运动与日常', '低强度运动': '运动与日常', '不做剧烈运动': '运动与日常',
+        '做家务-不适用': '运动与日常', '经常做重型家务': '运动与日常', '做轻型家务': '运动与日常', '很少做家务': '运动与日常',
+        '每日步数充足': '运动与日常', '每日步数中等': '运动与日常', '每日步数较少': '运动与日常', '每日步数很少': '运动与日常',
+        '规律刷牙': '运动与日常', '每日刷牙一次': '运动与日常', '不规律刷牙': '运动与日常',
+        '每日泡澡': '运动与日常', '经常泡澡': '运动与日常', '偶尔泡澡': '运动与日常', '很少泡澡': '运动与日常',
+        
+        '最优睡眠时长': '睡眠与久坐', '睡眠6小时': '睡眠与久坐', '睡眠8小时': '睡眠与久坐', '睡眠9小时': '睡眠与久坐', '睡眠≥10小时': '睡眠与久坐',
+        '最优入睡时间': '睡眠与久坐', '晚睡': '睡眠与久坐', '过早睡': '睡眠与久坐',
+        '久坐时间少': '睡眠与久坐', '中等久坐': '睡眠与久坐', '久坐时间长': '睡眠与久坐', '久坐时间很长': '睡眠与久坐',
+        
+        '乐观情绪': '心理与体重', '中性情绪': '心理与体重', '悲观情绪': '心理与体重',
+        '正常体重': '心理与体重', '超重': '心理与体重', '肥胖': '心理与体重', '成功减重': '心理与体重'
+    };
+    
+    return impacts.map(impact => ({
+        ...impact,
+        category: categoryMap[impact.label] || '其他'
+    }));
+}
+
+// 计算类别统计
+function getCategoryStats(impacts) {
+    const categories = {};
+    
+    impacts.forEach(impact => {
+        const cat = impact.category;
+        if (!categories[cat]) {
+            categories[cat] = {
+                name: cat,
+                totalACM: 0,
+                count: 0,
+                factors: []
+            };
+        }
+        categories[cat].totalACM += impact.value;
+        categories[cat].count += 1;
+        if (impact.value !== 0) {
+            categories[cat].factors.push(impact);
+        }
+    });
+    
+    // 转换为数组并排序
+    return Object.values(categories).sort((a, b) => a.totalACM - b.totalACM);
+}
+
 // 生成改善建议
 function generateRecommendations(impacts) {
     const recommendations = [];
@@ -416,7 +488,10 @@ function generateRecommendations(impacts) {
 
 // 计算结果
 function calculateLifespan(formData) {
-    const impacts = getImpactFactors(formData);
+    let impacts = getImpactFactors(formData);
+    
+    // 添加类别信息
+    impacts = categorizeImpacts(impacts);
     
     // 计算总ACM变化
     // 注意：这里使用简化的叠加模型，实际上各因素之间可能有交互作用
@@ -457,6 +532,9 @@ function calculateLifespan(formData) {
         };
     }
     
+    // 计算类别统计
+    const categoryStats = getCategoryStats(impacts);
+    
     return {
         totalLifespan: Math.round(limitedLifespan * 10) / 10,
         remainingYears: Math.round(limitedRemainingYears * 10) / 10,
@@ -465,8 +543,23 @@ function calculateLifespan(formData) {
         impacts,
         baseLifespan,
         limitWarning,
-        originalLifespan: Math.round(totalLifespan * 10) / 10
+        originalLifespan: Math.round(totalLifespan * 10) / 10,
+        categoryStats
     };
+}
+
+// 获取类别图标
+function getCategoryIcon(categoryName) {
+    const icons = {
+        '饮食-固体': '🍽️',
+        '饮食-液体': '☕',
+        '气体与光照': '🌞',
+        '药物补充剂': '💊',
+        '运动与日常': '🏃',
+        '睡眠与久坐': '😴',
+        '心理与体重': '💭'
+    };
+    return icons[categoryName] || '📌';
 }
 
 // 显示结果
@@ -529,6 +622,79 @@ function displayResults(results, formData) {
                     <strong>差异:</strong> ${results.lifespanChange > 0 ? '+' : ''}${results.lifespanChange} 年
                     ${results.lifespanChange > 0 ? '🎉' : results.lifespanChange < 0 ? '⚠️' : ''}
                 </div>
+            </div>
+            
+            <!-- 寿命对比图表 -->
+            <div class="lifespan-chart">
+                <h3>📊 寿命对比可视化</h3>
+                <div class="chart-container">
+                    <div class="chart-item">
+                        <div class="chart-label">基准寿命</div>
+                        <div class="chart-bar-wrapper">
+                            <div class="chart-bar baseline" style="width: ${(results.baseLifespan / 120) * 100}%">
+                                <span class="chart-value">${results.baseLifespan}岁</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="chart-item">
+                        <div class="chart-label">预期寿命</div>
+                        <div class="chart-bar-wrapper">
+                            <div class="chart-bar predicted ${results.totalLifespan > results.baseLifespan ? 'positive' : 'negative'}" 
+                                 style="width: ${(results.totalLifespan / 120) * 100}%">
+                                <span class="chart-value">${results.totalLifespan}岁</span>
+                            </div>
+                        </div>
+                    </div>
+                    ${results.limitWarning && results.limitWarning.type === 'max' ? `
+                    <div class="chart-item">
+                        <div class="chart-label">理论寿命</div>
+                        <div class="chart-bar-wrapper">
+                            <div class="chart-bar theoretical" style="width: ${(results.originalLifespan / 120) * 100}%">
+                                <span class="chart-value">${results.originalLifespan}岁（已限制）</span>
+                            </div>
+                        </div>
+                    </div>
+                    ` : ''}
+                    <div class="chart-item">
+                        <div class="chart-label">人类极限</div>
+                        <div class="chart-bar-wrapper">
+                            <div class="chart-bar limit" style="width: 100%">
+                                <span class="chart-value">122岁</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 类别影响分析 -->
+            <div class="category-analysis">
+                <h3>🎯 类别影响分析</h3>
+                <p class="section-desc">各个类别对您寿命的综合影响</p>
+                ${results.categoryStats.map(cat => `
+                    <div class="category-item">
+                        <div class="category-header">
+                            <span class="category-name">
+                                ${getCategoryIcon(cat.name)} ${cat.name}
+                            </span>
+                            <span class="category-impact ${cat.totalACM > 0 ? 'negative' : cat.totalACM < 0 ? 'positive' : 'neutral'}">
+                                ${cat.totalACM > 0 ? '+' : ''}${cat.totalACM}% ACM
+                            </span>
+                        </div>
+                        <div class="category-bar-wrapper">
+                            <div class="category-bar ${cat.totalACM > 0 ? 'negative' : 'positive'}" 
+                                 style="width: ${Math.min(Math.abs(cat.totalACM) / 2, 100)}%"></div>
+                        </div>
+                        ${cat.factors.length > 0 ? `
+                            <div class="category-factors">
+                                ${cat.factors.map(f => `
+                                    <span class="factor-tag ${f.value > 0 ? 'negative' : 'positive'}">
+                                        ${f.label} (${f.value > 0 ? '+' : ''}${f.value}%)
+                                    </span>
+                                `).join('')}
+                            </div>
+                        ` : '<div class="category-factors"><span class="factor-tag neutral">该类别无显著影响</span></div>'}
+                    </div>
+                `).join('')}
             </div>
             
             ${significantImpacts.length > 0 ? `
