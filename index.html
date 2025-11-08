@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>程序员寿命预测器 - 基于科学研究的健康评估</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🧬 程序员寿命预测器</h1>
+            <p class="subtitle">基于《程序员延寿指南》的科学研究数据</p>
+        </header>
+
+        <div class="content-wrapper">
+            <!-- 左侧问卷区域 -->
+            <div class="survey-section">
+                <form id="lifespanForm">
+                    <!-- 基本信息 -->
+                    <section class="form-section">
+                        <h2>📋 基本信息</h2>
+                        <div class="form-group">
+                            <label for="age">当前年龄</label>
+                            <input type="number" id="age" min="18" max="100" value="30" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="gender">性别</label>
+                            <select id="gender" required>
+                                <option value="male">男性</option>
+                                <option value="female">女性</option>
+                            </select>
+                        </div>
+                    </section>
+
+                    <!-- 饮食习惯 - 固体 -->
+                    <section class="form-section">
+                        <h2>🍽️ 饮食习惯 - 固体</h2>
+                        
+                        <div class="form-group">
+                            <label>肉类摄入</label>
+                            <select id="meatType">
+                                <option value="white">主要吃白肉（鸡肉、鱼肉）(-7% ACM)</option>
+                                <option value="mixed" selected>混合红白肉 (0% ACM)</option>
+                                <option value="red">主要吃红肉（猪肉、牛肉）(+7% ACM)</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label>蔬果摄入</label>
+                            <select id="vegetableFruit">
+                                <option value="high">每天200g以上 (-21% ACM)</option>
+                                <option value="medium" selected>每天100-200g (-10% ACM)</option>
+                                <option value="low">每天少于100g (0% ACM)</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label>辣椒摄入</label>
+                            <select id="chili">
+                                <option value="regular">每周4次以上 (-23% ACM)</option>
+                                <option value="sometimes" selected>偶尔吃辣 (-10% ACM)</option>
+                                <option value="never">几乎不吃 (0% ACM)</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label>坚果摄入</label>
+                            <select id="nuts">
+                                <option value="daily">每天一把 (-20% ACM)</option>
+                                <option value="weekly">每周3-5次 (-15% ACM)</option>
+                                <option value="occasionally" selected>偶尔吃 (-7% ACM)</option>
+                                <option value="never">几乎不吃 (0% ACM)</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label>超加工食品</label>
+                            <select id="ultraProcessed">
+                                <option value="rare">很少吃 (-40% ACM)</option>
+                                <option value="sometimes" selected>偶尔吃 (-20% ACM)</option>
+                                <option value="regular">经常吃 (0% ACM)</option>
+                                <option value="frequent">每天都吃 (+25% ACM)</option>
+                            </select>
+                        </div>
+                    </section>
+
+                    <!-- 饮食习惯 - 液体 -->
+                    <section class="form-section">
+                        <h2>☕ 饮食习惯 - 液体</h2>
+                        
+                        <div class="form-group">
+                            <label>咖啡摄入</label>
+                            <select id="coffee">
+                                <option value="optimal">每天2-3.5杯 (-17% ACM)</option>
+                                <option value="moderate" selected>每天1-2杯 (-10% ACM)</option>
+                                <option value="light">偶尔喝 (-5% ACM)</option>
+                                <option value="none">不喝 (0% ACM)</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label>牛奶摄入</label>
+                            <select id="milk">
+                                <option value="high">每天2份以上 (-17% ACM)</option>
+                                <option value="medium" selected>每天1份 (-10% ACM)</option>
+                                <option value="low">偶尔喝 (-5% ACM)</option>
+                                <option value="none">不喝 (0% ACM)</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label>茶摄入</label>
+                            <select id="tea">
+                                <option value="daily">每天喝 (-12% ACM)</option>
+                                <option value="regular">每周3次以上 (-8% ACM)</option>
+                                <option value="occasionally" selected>偶尔喝 (-4% ACM)</option>
+                                <option value="never">不喝 (0% ACM)</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label>含糖饮料</label>
+                            <select id="sugaryDrinks">
+                                <option value="none">不喝 (0% ACM)</option>
+                                <option value="rare" selected>偶尔喝 (+3% ACM)</option>
+                                <option value="daily">每天1杯 (+7% ACM)</option>
+                                <option value="multiple">每天2杯以上 (+21% ACM)</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label>饮酒习惯</label>
+                            <select id="alcohol">
+                                <option value="none">不喝酒 (0% ACM)</option>
+                                <option value="light" selected>少量饮酒(每周<100g纯酒精) (+10% ACM)</option>
+                                <option value="moderate">中等饮酒(每周100-200g) (+30% ACM)</option>
+                                <option value="heavy">大量饮酒(每周>200g) (+50% ACM)</option>
+                            </select>
+                        </div>
+                    </section>
+
+                    <!-- 其他习惯 -->
+                    <section class="form-section">
+                        <h2>💨 气体与光照</h2>
+                        
+                        <div class="form-group">
+                            <label>吸烟状况</label>
+                            <select id="smoking">
+                                <option value="never">从不吸烟 (0% ACM)</option>
+                                <option value="quit" selected>已戒烟 (+10% ACM)</option>
+                                <option value="light">轻度吸烟(<10支/天) (+17% ACM)</option>
+                                <option value="heavy">重度吸烟(≥10支/天) (+54% ACM)</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label>晒太阳</label>
+                            <select id="sunlight">
+                                <option value="regular">经常晒太阳 (-40% ACM)</option>
+                                <option value="sometimes" selected>偶尔晒太阳 (-20% ACM)</option>
+                                <option value="rare">很少晒太阳 (0% ACM)</option>
+                            </select>
+                        </div>
+                    </section>
+
+                    <!-- 药物与补充剂 -->
+                    <section class="form-section">
+                        <h2>💊 药物与补充剂</h2>
+                        
+                        <div class="form-group">
+                            <label>二甲双胍（糖尿病患者）</label>
+                            <select id="metformin">
+                                <option value="notApplicable" selected>不适用（非糖尿病）(0% ACM)</option>
+                                <option value="taking">糖尿病患者服用中 (-15% ACM)</option>
+                                <option value="notTaking">糖尿病患者未服用 (+20% ACM)</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label>复合维生素</label>
+                            <select id="multivitamin">
+                                <option value="regular">定期服用 (-8% ACM)</option>
+                                <option value="sometimes">偶尔服用 (-4% ACM)</option>
+                                <option value="never" selected>不服用 (0% ACM)</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label>葡萄糖胺（氨糖）</label>
+                            <select id="glucosamine">
+                                <option value="regular">定期服用 (-39% ACM)</option>
+                                <option value="sometimes">偶尔服用 (-20% ACM)</option>
+                                <option value="never" selected>不服用 (0% ACM)</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label>亚精胺摄入（纳豆、蘑菇、全谷物）</label>
+                            <select id="spermidine">
+                                <option value="high">高摄入量 (-45% ACM)</option>
+                                <option value="medium">中等摄入量 (-30% ACM)</option>
+                                <option value="low" selected>低摄入量 (-15% ACM)</option>
+                                <option value="veryLow">很少摄入 (0% ACM)</option>
+                            </select>
+                        </div>
+                    </section>
+
+                    <!-- 运动习惯 -->
+                    <section class="form-section">
+                        <h2>🏃 运动与日常</h2>
+                        
+                        <div class="form-group">
+                            <label>挥拍运动（羽毛球、乒乓球、网球）</label>
+                            <select id="racquetSports">
+                                <option value="regular">每周3次，每次45分钟 (-47% ACM)</option>
+                                <option value="sometimes">每周1-2次 (-25% ACM)</option>
+                                <option value="rare" selected>偶尔打 (-10% ACM)</option>
+                                <option value="never">不做 (0% ACM)</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label>剧烈运动</label>
+                            <select id="intenseExercise">
+                                <option value="high">每周50分钟以上 (-40% ACM)</option>
+                                <option value="medium">每周15-20分钟 (-25% ACM)</option>
+                                <option value="low" selected>偶尔做 (-10% ACM)</option>
+                                <option value="none">不做 (0% ACM)</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label>做家务（仅限72岁以上男性）</label>
+                            <select id="housework">
+                                <option value="notApplicable" selected>不适用 (0% ACM)</option>
+                                <option value="heavy">经常做重型家务 (-29% ACM)</option>
+                                <option value="light">主要做轻型家务 (-15% ACM)</option>
+                                <option value="rare">很少做家务 (0% ACM)</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label>每日步数</label>
+                            <select id="dailySteps">
+                                <option value="high">每天≥8000步 (-50% ACM)</option>
+                                <option value="medium">每天5000-8000步 (-30% ACM)</option>
+                                <option value="low" selected>每天3000-5000步 (-15% ACM)</option>
+                                <option value="veryLow">每天<3000步 (0% ACM)</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label>刷牙习惯</label>
+                            <select id="brushTeeth">
+                                <option value="twice">每天2次以上 (-25% ACM)</option>
+                                <option value="once" selected>每天1次 (-12% ACM)</option>
+                                <option value="irregular">不规律 (0% ACM)</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label>泡澡习惯</label>
+                            <select id="bathing">
+                                <option value="daily">每天泡澡 (-28% ACM)</option>
+                                <option value="regular">每周3-5次 (-15% ACM)</option>
+                                <option value="sometimes" selected>每周1-2次 (-7% ACM)</option>
+                                <option value="rare">很少泡澡 (0% ACM)</option>
+                            </select>
+                        </div>
+                    </section>
+
+                    <!-- 睡眠与久坐 -->
+                    <section class="form-section">
+                        <h2>😴 睡眠与久坐</h2>
+                        
+                        <div class="form-group">
+                            <label>每日睡眠时长</label>
+                            <select id="sleepDuration">
+                                <option value="optimal">7小时 (0% ACM)</option>
+                                <option value="six">6小时 (+7% ACM)</option>
+                                <option value="eight" selected>8小时 (+5% ACM)</option>
+                                <option value="nine">9小时 (+15% ACM)</option>
+                                <option value="ten">≥10小时 (+34% ACM)</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label>入睡时间</label>
+                            <select id="sleepTime">
+                                <option value="optimal">22:00-24:00 (0% ACM)</option>
+                                <option value="late" selected>24:00以后 (+15% ACM)</option>
+                                <option value="early">22:00以前 (+43% ACM)</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label>每日久坐时长</label>
+                            <select id="sitting">
+                                <option value="low">少于4小时 (0% ACM)</option>
+                                <option value="medium" selected>4-6小时 (+5% ACM)</option>
+                                <option value="high">6-8小时 (+15% ACM)</option>
+                                <option value="veryHigh">超过8小时 (+25% ACM)</option>
+                            </select>
+                        </div>
+                    </section>
+
+                    <!-- 心理与其他 -->
+                    <section class="form-section">
+                        <h2>💭 心理与其他因素</h2>
+                        
+                        <div class="form-group">
+                            <label>情绪状态</label>
+                            <select id="emotion">
+                                <option value="optimistic">乐观积极 (0% ACM)</option>
+                                <option value="neutral" selected>中性平和 (+5% ACM)</option>
+                                <option value="pessimistic">悲观消极 (+13% ACM)</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label>体重状况</label>
+                            <select id="weight">
+                                <option value="normal">正常体重 (0% ACM)</option>
+                                <option value="overweight" selected>超重 (+10% ACM)</option>
+                                <option value="obese">肥胖 (+25% ACM)</option>
+                                <option value="lostWeight">从肥胖减至超重 (-54% ACM)</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label>槟榔摄入</label>
+                            <select id="betelNut">
+                                <option value="never" selected>从不嚼槟榔 (0% ACM)</option>
+                                <option value="quit">已戒除 (+10% ACM)</option>
+                                <option value="occasional">偶尔嚼 (+15% ACM)</option>
+                                <option value="regular">经常嚼 (+21% ACM)</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label>碳水化合物摄入比例</label>
+                            <select id="carbs">
+                                <option value="veryLow">极低碳（<30%） (+20% ACM)</option>
+                                <option value="low">低碳（30-40%） (+8% ACM)</option>
+                                <option value="optimal">适中（45-55%） (0% ACM)</option>
+                                <option value="medium" selected>中等（55-65%） (+3% ACM)</option>
+                                <option value="high">高碳（>65%） (+7% ACM)</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label>蛋白质来源</label>
+                            <select id="proteinSource">
+                                <option value="plantBased">主要植物蛋白 (-10% ACM)</option>
+                                <option value="mixed" selected>动植物混合 (0% ACM)</option>
+                                <option value="animalBased">主要动物蛋白 (+5% ACM)</option>
+                            </select>
+                        </div>
+                    </section>
+
+                    <button type="submit" class="submit-btn">🎯 计算我的预期寿命</button>
+                </form>
+            </div>
+
+            <!-- 右侧结果区域 -->
+            <div class="results-section" id="resultsSection">
+                <div class="results-placeholder">
+                    <div class="placeholder-icon">📊</div>
+                    <p>填写左侧问卷后，点击计算按钮</p>
+                    <p class="placeholder-sub">将为您生成详细的寿命预测报告</p>
+                </div>
+            </div>
+        </div>
+
+        <footer>
+            <p>⚠️ 本工具仅供参考，基于学术研究数据的统计相关性，不构成医疗建议</p>
+            <p>数据来源：<a href="https://github.com/geekan/HowToLiveLonger" target="_blank">《程序员延寿指南》</a></p>
+        </footer>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
+
