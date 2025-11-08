@@ -237,6 +237,12 @@ header h1 {
     color: #991b1b;
 }
 
+.limit-warning.warning {
+    background: linear-gradient(135deg, #fed7aa 0%, #fdba74 100%);
+    border: 2px solid #ea580c;
+    color: #7c2d12;
+}
+
 .acm-display {
     text-align: center;
     padding: 20px;
@@ -261,6 +267,24 @@ header h1 {
 
 .acm-value.neutral {
     color: var(--text-secondary);
+}
+
+.acm-adjustment {
+    margin-top: 15px;
+    padding: 12px;
+    background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+    border-left: 3px solid var(--warning-color);
+    border-radius: 6px;
+    text-align: left;
+}
+
+.acm-adjustment small {
+    color: #92400e;
+    line-height: 1.6;
+}
+
+.acm-adjustment strong {
+    color: #78350f;
 }
 
 .impact-summary {

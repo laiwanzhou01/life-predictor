@@ -4,29 +4,89 @@ const BASE_LIFESPAN = {
     female: 80
 };
 
-// 人类寿命的生理极限
+// 人类寿命的生理极限（更严格的设置）
 const LIFESPAN_LIMITS = {
     min: 30,    // 理论最小寿命（当前年龄+极端不良生活习惯）
     max: 122,   // Jeanne Calment 人类有记录的最长寿命
-    realistic_max: 115  // 现实可达的最大寿命
+    realistic_max: 110, // 现实可达的最大寿命（更严格：基于统计学上可验证的案例）
+    very_healthy_max: 105, // 极度健康的上限（99.9%人群的极限）
+    healthy_max: 95     // 健康生活方式的常见上限
 };
 
-// ACM值到寿命变化的转换函数
-// 根据指南中的公式: ΔLifeSpan = (1/(1+ΔACM)-1)*10
+// ACM值到寿命变化的转换函数（中等强度版本）
+// 在现实性和激励性之间找到平衡
 function acmToLifespanChange(acmChange) {
     // acmChange 为百分比形式，如 -10 表示降低10%
     const acmDecimal = acmChange / 100;
-    const lifespanChange = (1 / (1 + acmDecimal) - 1) * 10;
+    
+    // 原始公式: ΔLifeSpan = (1/(1+ΔACM)-1)*10
+    let lifespanChange = (1 / (1 + acmDecimal) - 1) * 10;
+    
+    // 中等限制：设置寿命变化的上下限
+    // 积极影响（降低ACM）的渐进式压缩
+    if (lifespanChange > 25) {
+        // 超过25年的部分压缩
+        const excess = lifespanChange - 25;
+        lifespanChange = 25 + excess * 0.5; // 超出部分保留50%
+    } else if (lifespanChange > 20) {
+        // 20-25年之间轻微压缩
+        const excess = lifespanChange - 20;
+        lifespanChange = 20 + excess * 0.8; // 保留80%
+    }
+    
+    // 消极影响（增加ACM）
+    if (lifespanChange < -30) {
+        const excess = Math.abs(lifespanChange) - 30;
+        lifespanChange = -30 - excess * 0.6; // 超出部分保留60%
+    }
+    
+    // 最终硬性上限：+32年/-35年（比严格版本宽松）
+    lifespanChange = Math.max(-35, Math.min(32, lifespanChange));
+    
     return lifespanChange;
 }
 
-// 应用寿命上下限限制
-function applyLifespanLimits(lifespan, currentAge) {
+// 应用寿命上下限限制（更严格的规则）
+function applyLifespanLimits(lifespan, currentAge, totalACM) {
     // 确保不低于当前年龄
     lifespan = Math.max(lifespan, currentAge);
     
-    // 应用现实最大寿命限制
-    lifespan = Math.min(lifespan, LIFESPAN_LIMITS.realistic_max);
+    // 根据ACM值应用不同的上限（中等强度）
+    let maxLimit;
+    if (totalACM < -200) {
+        // ACM < -200%: 极度健康
+        maxLimit = 108; // 提高到108岁
+    } else if (totalACM < -150) {
+        // ACM -150% ~ -200%: 非常健康
+        maxLimit = 100; // 提高到100岁
+    } else if (totalACM < -100) {
+        // ACM -100% ~ -150%: 健康
+        maxLimit = 93; // 提高到93岁
+    } else if (totalACM < -50) {
+        // ACM -50% ~ -100%: 较健康
+        maxLimit = 90;
+    } else if (totalACM < 0) {
+        // ACM 0 ~ -50%: 轻微健康
+        maxLimit = 87;
+    } else if (totalACM < 50) {
+        // ACM 0 ~ 50%: 轻微不健康
+        maxLimit = 82;
+    } else if (totalACM < 100) {
+        // ACM 50% ~ 100%: 不健康
+        maxLimit = 76;
+    } else {
+        // ACM > 100%: 很不健康
+        maxLimit = 70;
+    }
+    
+    // 考虑年龄因素：年龄越大，上限相对越低（调整系数减半）
+    if (currentAge > 60) {
+        const ageAdjustment = (currentAge - 60) * 0.15; // 每超过60岁，上限降低0.15岁/年（比之前0.2更宽松）
+        maxLimit = maxLimit - ageAdjustment;
+    }
+    
+    // 应用严格的上限
+    lifespan = Math.min(lifespan, maxLimit);
     
     // 极端情况下的下限
     const minimumLifespan = Math.max(currentAge + 1, LIFESPAN_LIMITS.min);
@@ -493,9 +553,47 @@ function calculateLifespan(formData) {
     // 添加类别信息
     impacts = categorizeImpacts(impacts);
     
-    // 计算总ACM变化
-    // 注意：这里使用简化的叠加模型，实际上各因素之间可能有交互作用
-    const totalACM = impacts.reduce((sum, impact) => sum + impact.value, 0);
+    // 计算总ACM变化（添加严格的规则）
+    let totalACM = impacts.reduce((sum, impact) => sum + impact.value, 0);
+    
+    // 中等规则1: 负面因素的惩罚加重（适度版本）
+    const negativeACM = impacts.filter(i => i.value > 0).reduce((sum, i) => sum + i.value, 0);
+    const positiveACM = impacts.filter(i => i.value < 0).reduce((sum, i) => sum + i.value, 0);
+    
+    // 如果负面因素过多，额外惩罚（非线性效应）
+    if (negativeACM > 60) {
+        // 阈值从50%提高到60%，更宽松
+        const penalty = (negativeACM - 60) * 0.15; // 惩罚系数从0.2降到0.15
+        totalACM += penalty;
+    }
+    
+    // 中等规则2: 积极因素的收益递减（适度版本）
+    if (positiveACM < -120) {
+        // 从-120%开始递减（比之前-100%更宽松）
+        let adjustment = 0;
+        if (positiveACM < -180) {
+            // 超过-180%，保留60%效果
+            adjustment += (positiveACM + 180) * 0.4;
+        }
+        if (positiveACM < -120) {
+            // -120%到-180%，损失10%
+            const phase1 = Math.max(positiveACM, -180) + 120;
+            adjustment += phase1 * 0.1;
+        }
+        totalACM += adjustment;
+    }
+    
+    // 中等规则3: 关键风险因素的额外权重（适度版本）
+    const criticalRisks = impacts.filter(i => 
+        (i.label.includes('重度吸烟') || 
+         i.label.includes('大量饮酒') || 
+         i.label.includes('肥胖') ||
+         i.label.includes('经常嚼槟榔')) && i.value > 0
+    );
+    if (criticalRisks.length > 0) {
+        const criticalPenalty = criticalRisks.reduce((sum, i) => sum + i.value, 0) * 0.25; // 从30%降到25%
+        totalACM += criticalPenalty;
+    }
     
     // 计算寿命变化
     const lifespanChange = acmToLifespanChange(totalACM);
@@ -512,22 +610,40 @@ function calculateLifespan(formData) {
     // 预期总寿命（应用限制前）
     let totalLifespan = currentAge + remainingYears;
     
-    // 应用人类寿命的生理极限
-    const limitedLifespan = applyLifespanLimits(totalLifespan, currentAge);
+    // 应用更严格的人类寿命生理极限
+    const limitedLifespan = applyLifespanLimits(totalLifespan, currentAge, totalACM);
     const limitedRemainingYears = limitedLifespan - currentAge;
     
     // 检查是否触及上限或下限
     let limitWarning = null;
+    let limitType = null;
+    
     if (totalLifespan > LIFESPAN_LIMITS.realistic_max) {
+        limitType = 'extreme';
         limitWarning = {
             type: 'max',
-            message: `根据计算您的寿命可达${Math.round(totalLifespan)}岁，但已超过人类现实寿命极限(${LIFESPAN_LIMITS.realistic_max}岁)。结果已调整为${limitedLifespan}岁。`,
+            message: `理论计算寿命为${Math.round(totalLifespan)}岁，但这超出了科学验证的人类寿命上限。已调整为${limitedLifespan}岁。即使是最健康的生活方式，也受到生物学极限的约束。`,
             originalValue: totalLifespan
         };
-    } else if (totalLifespan < currentAge + 1) {
+    } else if (totalLifespan > LIFESPAN_LIMITS.very_healthy_max && totalACM < -150) {
+        limitType = 'very_healthy';
+        limitWarning = {
+            type: 'max',
+            message: `您的生活方式非常健康！理论寿命${Math.round(totalLifespan)}岁，调整为${limitedLifespan}岁。这已经是人类中极少数能达到的水平。`,
+            originalValue: totalLifespan
+        };
+    } else if (totalLifespan < currentAge + 5) {
+        limitType = 'critical';
         limitWarning = {
             type: 'min',
-            message: '您的生活习惯存在严重健康风险！建议立即咨询医生并改变生活方式。',
+            message: '🚨 严重警告：您的生活习惯存在多个高危因素，预期寿命严重缩短！强烈建议立即就医并全面改变生活方式。',
+            originalValue: totalLifespan
+        };
+    } else if (totalLifespan < baseLifespan - 10) {
+        limitType = 'warning';
+        limitWarning = {
+            type: 'warning',
+            message: `⚠️ 注意：您的预期寿命比同龄人平均值低${Math.round(baseLifespan - totalLifespan)}年，建议优先改善高风险因素。`,
             originalValue: totalLifespan
         };
     }
@@ -535,16 +651,24 @@ function calculateLifespan(formData) {
     // 计算类别统计
     const categoryStats = getCategoryStats(impacts);
     
+    // 计算原始ACM（未经严格规则调整）
+    const rawACM = impacts.reduce((sum, impact) => sum + impact.value, 0);
+    
     return {
         totalLifespan: Math.round(limitedLifespan * 10) / 10,
         remainingYears: Math.round(limitedRemainingYears * 10) / 10,
         lifespanChange: Math.round(lifespanChange * 10) / 10,
-        totalACM,
+        totalACM: Math.round(totalACM),
+        rawACM: Math.round(rawACM),
         impacts,
         baseLifespan,
         limitWarning,
+        limitType,
         originalLifespan: Math.round(totalLifespan * 10) / 10,
-        categoryStats
+        categoryStats,
+        negativeACM: Math.round(negativeACM),
+        positiveACM: Math.round(positiveACM),
+        criticalRisksCount: criticalRisks.length
     };
 }
 
@@ -608,6 +732,17 @@ function displayResults(results, formData) {
                 <div class="acm-sublabel">
                     ${results.totalACM > 0 ? '⚠️ 高于平均水平' : results.totalACM < 0 ? '✅ 低于平均水平' : '➡️ 平均水平'}
                 </div>
+                ${results.rawACM !== results.totalACM ? `
+                    <div class="acm-adjustment">
+                        <small>
+                            <strong>严格规则调整：</strong>
+                            原始ACM: ${results.rawACM > 0 ? '+' : ''}${results.rawACM}% 
+                            → 调整后: ${results.totalACM > 0 ? '+' : ''}${results.totalACM}%
+                            ${results.criticalRisksCount > 0 ? `<br>🚨 检测到${results.criticalRisksCount}个关键风险因素，额外惩罚已应用` : ''}
+                            ${results.positiveACM < -150 ? `<br>💡 积极因素过多，收益递减效应已应用` : ''}
+                        </small>
+                    </div>
+                ` : ''}
             </div>
             
             <div class="comparison">
